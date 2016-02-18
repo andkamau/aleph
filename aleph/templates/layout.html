@@ -4,6 +4,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="google" content="notranslate" />
+    
+    <meta name="google-signin-scope" content="profile email">
+    <meta name="google-signin-client_id" content="914424606018-68qjso1v76sath3t3pe639oo42qopddg.apps.googleusercontent.com">
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+
     <title>{{config.APP_TITLE}}</title>
     
     {% assets "css" %}
@@ -37,9 +42,29 @@
         <div id="navbar" class="collapse navbar-collapse navbar-right">
           <ul class="nav navbar-nav">
             <li ng-show="!session.logged_in" ng-cloak>
+
+              <!--
               <a href="{{url_for('sessions.login')}}" target="_self">
-                <i class="fa fa-sign-in"></i> Sign in
+                <i class="fa fa-sign-in"></i> Sign in here
               </a>
+              -->
+
+              <div class="g-signin2" data-onsuccess="onSignIn" data-theme="light"></div>
+                <script>
+                  function onSignIn(googleUser) {
+                    // Useful data for your client-side scripts:
+                    var profile = googleUser.getBasicProfile();
+                    console.log("ID: " + profile.getId());
+                    console.log("Name: " + profile.getName());
+                    console.log("Image URL: " + profile.getImageUrl());
+                    console.log("Email: " + profile.getEmail());
+
+                    // The ID token you need to pass to your backend:
+                    var id_token = googleUser.getAuthResponse().id_token;
+                    console.log("ID Token: " + id_token);
+                  };
+                </script> 
+
             </li>
             <li ng-show="session.logged_in" ng-cloak>
               <a ng-click="editProfile()" ng-bind="session.role.name"></a>
@@ -57,7 +82,7 @@
     <div id="page">
       <div id="spinner-overlay" ng-hide="routeLoaded">
         <div class="spinner" ng-hide="routeFailed">
-          <i class="fa fa-spinner fa-pulse"></i>
+          <i class="fa fa-circle-o-notch fa-spin"></i>
         </div>
         <div class="spinner failed" ng-cloak ng-show="routeFailed">
           <i class="fa fa-exclamation-triangle"></i>
@@ -70,6 +95,8 @@
         <div ng-cloak ng-view autoscroll="true"></div>
       </div>
     </div>
+
+    {% include "analytics.html" %}
 
     {% for path, tmpl in templates %}
       <script id="{{path}}" type="text/ng-template">{{ tmpl | safe }}</script>
