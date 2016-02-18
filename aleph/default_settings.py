@@ -46,8 +46,8 @@ CELERY_BROKER_URL = env.get('RABBITMQ_BIGWIG_URL',
 CELERY_IMPORTS = ('aleph.queue')
 
 OAUTH = {
-    'consumer_key': '',
-    'consumer_secret': '',
+    'consumer_key': 'bcee20a7223a6ae26aea49a392bd21d3c4cbe075',
+    'consumer_secret': 'wTEEOYW5b66EumjZ_XHNh4Yv',
     'request_token_params': {
         'scope': 'https://www.googleapis.com/auth/userinfo.email'
     },
