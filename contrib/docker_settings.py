@@ -12,7 +12,7 @@ FAVICON = 'https://investigativedashboard.org/static/favicon.ico'
 ELASTICSEARCH_URL = os.environ.get('ALEPH_ELASTICSEARCH_URI')
 
 SQLALCHEMY_DATABASE_URI = os.environ.get('ALEPH_DATABASE_URI')
-PREFERRED_URL_SCHEME = 'https'
+PREFERRED_URL_SCHEME = 'http'
 
 MAIL_FROM = os.environ.get('MAIL_FROM')
 MAIL_HOST = os.environ.get('MAIL_HOST')
