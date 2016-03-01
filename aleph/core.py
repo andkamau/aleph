@@ -8,6 +8,7 @@ from flask.ext.migrate import Migrate
 from flask_oauthlib.contrib.client import OAuth
 from flask_login import LoginManager
 from flask_googlelogin import GoogleLogin
+from flask_mail import Mail
 from kombu import Exchange, Queue
 from celery import Celery
 from elasticsearch import Elasticsearch
@@ -22,9 +23,10 @@ app_name = app.config.get('APP_NAME')
 login_manager = LoginManager()
 login_manager.init_app(app)
 googlelogin = GoogleLogin(app, login_manager)
-
 oauth = OAuth(app)
 oauth_provider = oauth.remote_app('provider', app_key='OAUTH')
+
+mail = Mail(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db, directory=app.config.get('ALEMBIC_DIR'))

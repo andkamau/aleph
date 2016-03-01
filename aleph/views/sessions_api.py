@@ -8,6 +8,7 @@ from aleph.model import Role
 from flask.ext.login import login_user
 from aleph.core import (db, url_for, oauth_provider,
         system_role, googlelogin)
+from aleph.views.cache import enable_cache
 
 
 blueprint = Blueprint('sessions', __name__)
@@ -38,6 +39,7 @@ def load_role():
 
 @blueprint.route('/api/1/sessions')
 def status():
+    enable_cache(vary_user=True)
     return jsonify({
         'logged_in': authz.logged_in(),
         'api_key': request.auth_role.api_key if authz.logged_in() else None,

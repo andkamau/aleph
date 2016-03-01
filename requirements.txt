@@ -7,6 +7,7 @@ Flask-Script==2.0.5
 Flask-Login>=0.2.11
 Flask-OAuth>=0.12
 Flask-GoogleLogin>=0.3.0
+Flask-Mail
 celery>=3.1.17
 elasticsearch
 lxml
@@ -27,6 +28,7 @@ SQLAlchemy-Utils>=0.29.8
 https://github.com/pudo/messytables/tarball/allow-parser-args
 https://github.com/pudo/extractors/tarball/master
 https://github.com/pudo/krauler/tarball/master
+https://github.com/pudo/metafolder/tarball/master
 langid==1.1.5
 babel
 pdfminer==20140328
