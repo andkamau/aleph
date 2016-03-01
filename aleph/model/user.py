@@ -20,6 +20,7 @@ class User(db.Model, TimeStampedModel):
     name = db.Column(db.Unicode, nullable=True)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     api_key = db.Column(db.Unicode, default=make_token)
+    google_id=db.Column(db.Unicode)
 
     is_active = True
     is_authenticated = True

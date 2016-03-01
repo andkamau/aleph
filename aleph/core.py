@@ -5,19 +5,27 @@ from flask import url_for as flask_url_for
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.assets import Environment
 from flask.ext.migrate import Migrate
-from flask_oauthlib.client import OAuth
+from flask_oauthlib.contrib.client import OAuth
+from flask_login import LoginManager
+from flask_googlelogin import GoogleLogin
 from kombu import Exchange, Queue
 from celery import Celery
 from elasticsearch import Elasticsearch
-
 from aleph import default_settings, archive
 
 
 app = Flask(__name__)
 app.config.from_object(default_settings)
 app.config.from_envvar('ALEPH_SETTINGS', silent=True)
-
 app_name = app.config.get('APP_NAME')
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+#login_manager.login_view = 'ui'
+googlelogin = GoogleLogin(app, login_manager)
+
+
+
 oauth = OAuth(app)
 oauth_provider = oauth.remote_app('provider', app_key='OAUTH')
 

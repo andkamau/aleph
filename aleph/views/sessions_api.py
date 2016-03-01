@@ -1,21 +1,16 @@
 from flask import session, Blueprint, redirect, request
 from flask_oauthlib.client import OAuthException
 from apikit import jsonify
+from functools import wraps
 
 from aleph import authz
-from aleph.core import db, url_for, oauth_provider, system_role
 from aleph.model import Role
+from flask.ext.login import login_user
+from aleph.core import (db, url_for, oauth_provider,
+        system_role, googlelogin)
 
 
 blueprint = Blueprint('sessions', __name__)
-
-
-@oauth_provider.tokengetter
-def get_oauth_token():
-    if 'oauth' in session:
-        sig = session.get('oauth')
-        return (sig.get('access_token'), '')
-
 
 @blueprint.before_app_request
 def load_role():
@@ -64,7 +59,7 @@ def status():
 
 @blueprint.route('/api/1/sessions/login')
 def login():
-    return oauth_provider.authorize(callback=url_for('sessions.callback'))
+    return oauth_provider.authorize(url_for('sessions.create_or_update_user'))
 
 
 @blueprint.route('/api/1/sessions/logout')
@@ -106,4 +101,22 @@ def callback():
     session['roles'].append(role.id)
     session['user'] = role.id
     db.session.commit()
+    return redirect(url_for('ui'))
+
+@blueprint.route('/oauth2callback')
+@googlelogin.oauth2callback
+def create_or_update_user(token, userinfo, **kwargs):
+    g_id = userinfo.get('id')
+    name = userinfo.get('name')
+    email_address = userinfo.get('email')
+    user = User.filter_by(google_id=g_id).first()
+    if user:
+        user.name = username
+    else:
+        user = User(google_id=g_id,
+                    name=username,
+                    email=email_address)
+    db.session.add(user)
+    db.session.commit()
+    login_user(user, remember=True)
     return redirect(url_for('ui'))
