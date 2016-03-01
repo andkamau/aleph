@@ -103,6 +103,7 @@ def callback():
     db.session.commit()
     return redirect(url_for('ui'))
 
+
 @blueprint.route('/oauth2callback')
 @googlelogin.oauth2callback
 def create_or_update_user(token, userinfo, **kwargs):

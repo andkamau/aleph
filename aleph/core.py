@@ -21,10 +21,7 @@ app_name = app.config.get('APP_NAME')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
-#login_manager.login_view = 'ui'
 googlelogin = GoogleLogin(app, login_manager)
-
-
 
 oauth = OAuth(app)
 oauth_provider = oauth.remote_app('provider', app_key='OAUTH')

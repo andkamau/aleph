@@ -57,5 +57,6 @@ OAUTH = {
     'access_token_url': 'https://accounts.google.com/o/oauth2/token',
     'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
 }
+
 PROVIDER_CLIENT_ID = '914424606018-68qjso1v76sath3t3pe639oo42qopddg.apps.googleusercontent.com'
 PROVIDER_AUTHORIZATION_URL = 'https://accounts.google.com/o/oauth2/auth?scope=https://www.googleapis.com/auth/userinfo.email'
