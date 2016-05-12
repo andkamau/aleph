@@ -7,11 +7,11 @@ class SourceAfricaCrawler(Crawler):
     '''
     '''
 
-    def get_documents():
+    def get_documents(self):
         '''
         retrieve docs from sourceAfrica API
         '''
-        resp = requests.get(url, params=dict(q='', per_page=1000), timeout=4)
+        resp = requests.get(SOURCE_AFRICA_URL, params=dict(q='', per_page=1000), timeout=4)
         try:
             resp.raise_for_status()
         except:
@@ -25,7 +25,7 @@ class SourceAfricaCrawler(Crawler):
 
 
     def crawl(self):
-        documents = get_documents()
+        documents = self.get_documents()
         source = self.create_source(foreign_id='sourceafrica', label='sourceafrica.net documents')
         for idx in range(0, len(documents)):
             doc = documents[idx]
