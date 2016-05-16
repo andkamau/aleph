@@ -46,16 +46,14 @@ class SourceAfricaCrawler(Crawler):
         pagecount = self.get_pages()
         log.info("==== Starting to crawl: %s pages in %s" % (pagecount, SOURCE_AFRICA_URL))
         for page in range(1, pagecount):
-            if page > 10:
-                break
             log.info("Fetching page %s of %s" % (page, pagecount))
             documents = self.get_documents(page)
 
             for idx in range(0, len(documents)):
 
                 doc = documents[idx]
-                print "Pg %s:: document %s of %s: {id} | {title} | {file_hash}".format(**doc) % (
-                        page, idx, len(documents))
+                print "Pg %s:: document %s of %s: %s | %s | {file_hash}".format(**doc) % (
+                        page, idx, len(documents), doc['id'].encode('utf-8'), doc['title'].encode('utf-8'))
                 meta = self.metadata()
                 meta.foreign_id = "sourceafrica.%s" % doc['id']
                 meta.title = "%s" % doc['title']
