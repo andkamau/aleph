@@ -19,8 +19,6 @@ angular_assets = Bundle(
     'vendor/angular-sanitize/angular-sanitize.js',
     'vendor/angular-animate/angular-animate.js',
     'vendor/angular-bootstrap/ui-bootstrap-tpls.js',
-    'vendor/angulartics/src/angulartics.js',
-    'vendor/angulartics/src/angulartics-piwik.js',
     filters='uglifyjs',
     output='assets/angular.js'
 )
@@ -31,6 +29,23 @@ css_assets = Bundle(
     filters='scss,cssutils',
     output='assets/style.css'
 )
+
+
+def generate_custom_scss(app):
+    # This is a hack to allow an extra SCSS file to be specified in the
+    # settings.
+    custom_scss = os.path.join(app.static_folder, 'style', '_custom.scss')
+    old_scss_text = None
+    if os.path.isfile(custom_scss):
+        with open(custom_scss, 'r') as fh:
+            old_scss_text = fh.read()
+    scss_text = ''
+    if app.config.get('CUSTOM_SCSS_PATH'):
+        with open(app.config['CUSTOM_SCSS_PATH'], 'r') as fin:
+            scss_text = fin.read()
+    if scss_text != old_scss_text:
+        with open(custom_scss, 'w') as fout:
+            fout.write(scss_text)
 
 
 def compile_assets(app):
@@ -45,6 +60,7 @@ def compile_assets(app):
     app_assets = Bundle(*js_files,
                         filters='uglifyjs',
                         output='assets/app.js')
+    generate_custom_scss(app)
 
     assets._named_bundles = {}
     assets.register('base', base_assets)

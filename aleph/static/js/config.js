@@ -1,8 +1,6 @@
-var aleph = angular.module('aleph', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ui.bootstrap',
-                                     'pdf', 'angulartics', 'angulartics.piwik']);
+var aleph = angular.module('aleph', ['ngRoute', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'pdf']);
 
-aleph.config(['$routeProvider', '$locationProvider', '$analyticsProvider',
-    function($routeProvider, $locationProvider, $analyticsProvider) {
+aleph.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
 
   $routeProvider.when('/search', {
     templateUrl: 'templates/search.html',
@@ -55,6 +53,16 @@ aleph.config(['$routeProvider', '$locationProvider', '$analyticsProvider',
     resolve: {}
   });
 
+  $routeProvider.when('/crawlers', {
+    templateUrl: 'templates/crawlers_manage.html',
+    controller: 'CrawlersManageCtrl',
+    reloadOnSearch: false,
+    loginRequired: false,
+    resolve: {
+      'crawlers': loadCrawlers
+    }
+  });
+
   $routeProvider.when('/help/:page', {
     templateUrl: 'templates/help.html',
     controller: 'HelpCtrl',
@@ -80,11 +88,6 @@ aleph.config(['$routeProvider', '$locationProvider', '$analyticsProvider',
       'data': loadHome
     }
   });
-
-  // $routeProvider.otherwise({
-  //   redirectTo: '/',
-  //   loginRequired: false
-  // });
 
   $locationProvider.html5Mode(true);
 }]);

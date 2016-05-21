@@ -16,6 +16,10 @@ ARCHIVE_AWS_SECRET = env.get('AWS_SECRET_ACCESS_KEY')
 # ARCHIVE_BUCKET = 'aleph2-dev.pudo.org'
 ARCHIVE_PATH = env.get('ARCHIVE_PATH', '/srv/data/aleph')
 
+# Set up a custom SCSS file with additional style rules here.
+CUSTOM_SCSS_PATH = None
+CUSTOM_TEMPLATES_DIR = []
+
 OCR_DEFAULTS = ['en']
 TESSDATA_PREFIX = env.get('TESSDATA_PREFIX')
 PDFTOPPM_BIN = env.get('PDFTOPPM_BIN', 'pdftoppm')
@@ -55,7 +59,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'reindex-entities': {
         'task': 'aleph.entities.reindex_entities',
-        'schedule': crontab(hour='*/4', minute=0)
+        'schedule': crontab(hour=1, minute=0, day_of_week=1)
+    },
+    'scheduled-crawlers': {
+        'task': 'aleph.crawlers.execute_scheduled',
+        'schedule': crontab(hour='*/6', minute=40)
     },
 }
 

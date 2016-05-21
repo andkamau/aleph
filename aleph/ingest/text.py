@@ -30,11 +30,8 @@ class TextIngestor(Ingestor):
         return list(set(languages))
 
     def extract_pdf(self, meta, pdf_path):
-        data = extract_pdf(pdf_path, languages=self.get_languages(meta))
-        if data is None:
-            log.error("Could not parse PDF: %r", meta)
-            return
-
+        languages = self.get_languages(meta)
+        data = extract_pdf(pdf_path, languages=languages)
         if not meta.has('author') and data.get('author'):
             meta['author'] = data.get('author')
 
@@ -55,10 +52,7 @@ class PDFIngestor(TextIngestor):
     EXTENSIONS = ['pdf']
 
     def ingest(self, meta, local_path):
-        try:
-            self.extract_pdf(meta, local_path)
-        except Exception as exception:
-            self.log_exception(meta, exception)
+        self.extract_pdf(meta, local_path)
 
     @classmethod
     def match(cls, meta, local_path):

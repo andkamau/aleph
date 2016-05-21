@@ -1,13 +1,11 @@
 import os
 import logging
 import requests
-from tempfile import NamedTemporaryFile
+from tempfile import mkstemp
 
-from aleph import event
 from aleph.core import get_archive, celery
-from aleph.model import clear_session
 from aleph.metadata import Metadata
-from aleph.ingest.ingestor import Ingestor
+from aleph.ingest.ingestor import Ingestor, IngestorException
 
 log = logging.getLogger(__name__)
 
@@ -20,42 +18,43 @@ log = logging.getLogger(__name__)
 # http://pybrary.net/pyPdf/pythondoc-pyPdf.pdf.html
 # https://svn.apache.org/viewvc/httpd/httpd/branches/2.2.x/docs/conf/mime.types?view=annotate
 
+# pdfminer.six: https://github.com/goulu/pdfminer
+# tesserocr: https://github.com/sirfz/tesserocr
+
 
 @celery.task()
 def ingest_url(source_id, metadata, url):
-    clear_session()
     meta = Metadata(data=metadata)
     try:
-        with NamedTemporaryFile() as fh:
-            log.info("Ingesting URL: %r", url)
-            res = requests.get(url, stream=True)
-            if res.status_code >= 400:
-                log.error("Error ingesting %r: %r", url, res.status_code)
+        fh, tmp_path = mkstemp()
+        os.close(fh)
+        log.info("Ingesting URL: %r", url)
+        res = requests.get(url, stream=True)
+        if res.status_code >= 400:
+            raise Exception("HTTP Error %r: %r" % (url, res.status_code))
+        with open(tmp_path, 'w') as fh:
             for chunk in res.iter_content(chunk_size=1024):
                 if chunk:
                     fh.write(chunk)
-            fh.flush()
-            if not meta.has('source_url'):
-                meta.source_url = res.url
-            meta.headers = res.headers
-            meta = get_archive().archive_file(fh.name, meta, move=True)
-            ingest.delay(source_id, meta.data)
+        if not meta.has('source_url'):
+            meta.source_url = res.url
+        meta.headers = res.headers
+        meta = get_archive().archive_file(tmp_path, meta, move=True)
+        Ingestor.dispatch(source_id, meta)
     except Exception as ex:
-        event.exception('aleph.ingest.ingest_url', metadata, ex)
-        raise
+        Ingestor.handle_exception(meta, source_id, ex)
 
 
-def ingest_file(source_id, meta, file_name, move=False):
+def ingest_file(source_id, meta, file_path, move=False):
     try:
-        if not os.path.isfile(file_name):
-            raise ValueError("No such file: %r", file_name)
+        if not os.path.isfile(file_path):
+            raise IngestorException("No such file: %r", file_path)
         if not meta.has('source_path'):
-            meta.source_path = file_name
-        meta = get_archive().archive_file(file_name, meta, move=move)
+            meta.source_path = file_path
+        meta = get_archive().archive_file(file_path, meta, move=move)
         ingest.delay(source_id, meta.data)
     except Exception as ex:
-        event.exception('aleph.ingest.ingest_file', meta.data, ex)
-        raise
+        Ingestor.handle_exception(meta, source_id, ex)
 
 
 @celery.task()

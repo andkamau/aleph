@@ -4,6 +4,7 @@ import subprocess
 from tempfile import mkstemp
 
 from aleph.core import get_config
+from aleph.ingest.ingestor import IngestorException
 from aleph.ingest.text import TextIngestor
 
 log = logging.getLogger(__name__)
@@ -22,13 +23,13 @@ class ImageIngestor(TextIngestor):
         try:
             fh, pdf_path = mkstemp(suffix='.pdf')
             os.close(fh)
+            meta.title = meta.file_name
             convert = get_config('CONVERT_BIN')
             args = [convert, local_path, '-density', '300', '-define',
                     'pdf:fit-page=A4', pdf_path]
             subprocess.call(args)
             if pdf_path is None or not os.path.isfile(pdf_path):
-                log.error("Could not convert image: %r", meta)
-                return
+                raise IngestorException("Could not convert image: %r" % meta)
             self.store_pdf(meta, pdf_path)
             self.extract_pdf(meta, pdf_path)
         finally:

@@ -4,6 +4,7 @@ from time import time
 from threading import RLock
 from itertools import count
 from collections import defaultdict
+from sqlalchemy.orm import joinedload
 
 from aleph.core import db
 from aleph.text import normalize_strong
@@ -36,9 +37,10 @@ class EntityCache(object):
         self.matches = defaultdict(set)
 
         q = Entity.all()
+        q = q.options(joinedload('other_names'))
         q = q.filter(Entity.state == Entity.STATE_ACTIVE)
         for entity in q:
-            for term in entity.terms:
+            for term in entity.regex_terms:
                 self.matches[normalize_strong(term)].add(entity.id)
 
         self.regexes = []
@@ -89,8 +91,8 @@ class RegexEntityAnalyzer(Analyzer):
 
         duration_time = int((time() - begin_time) * 1000)
         if len(entities):
-            log.info("Tagged %r with %d entities (%sms)",
+            log.info("Regex tagged %r with %d entities (%sms)",
                      document, len(entities), duration_time)
         else:
-            log.info("No entities on %r (%sms)",
+            log.info("Regex found no entities on %r (%sms)",
                      document, duration_time)
