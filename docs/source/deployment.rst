@@ -54,10 +54,11 @@ This is a `from scratch` guide for deploying aleph components outside of a conta
    $ git clone https://github.com/codeforafrica/aleph
    $ cd aleph
 
-4. Install and set up tesseract (and its dependencies):  `Installation steps here <http://hanzratech.in/2015/01/16/ocr-using-tesseract-on-ubuntu-14-04.html>`_
+4. a) Install and set up tesseract (and its dependencies):  `Installation steps here <http://hanzratech.in/2015/01/16/ocr-using-tesseract-on-ubuntu-14-04.html>`_
    
    (Build may take a while...)
 
+4. b) Install and set up polyglot (and its dependencies): `Installation steps here <http://polyglot.readthedocs.io/en/latest/Installation.html>`_
 
    
 5. Install python dependencies::
